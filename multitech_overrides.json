@@ -1,0 +1,34 @@
+{
+	"SX1301_conf": {
+		"clksrc": 0,
+		"clksrc_desc": "radio_0 provides clock to concentrator",
+		"tx_lut_11": {
+		     "mix_gain": 10
+		},
+		"tx_lut_12": {
+		     "mix_gain": 11
+		},
+		"tx_lut_13": {
+		     "mix_gain": 12,
+		     "rf_power": 24
+		},
+		"tx_lut_14": {
+		     "mix_gain": 13,
+		     "rf_power": 25
+		},
+		"tx_lut_15": {
+		     "mix_gain": 15,
+		     "rf_power": 26
+		}
+	},
+	"gateway_conf": {
+		 "upstream": true,
+		 "downstream": true,
+		 "radiostream": true,
+		 "statusstream": true,
+		 "keepalive_interval": 10,
+		 "stat_interval": 30,
+		 "push_timeout_ms": 100,
+		 "platform": "*"
+	}
+}
