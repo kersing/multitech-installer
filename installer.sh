@@ -11,7 +11,7 @@ STATUSFILE=/var/config/.installer
 VERSION=2.1-r4
 FILENAME=poly-packet-forwarder_${VERSION}_arm926ejste.ipk
 #URL=https://raw.github.com/kersing/packet_forwarder/master/multitech-bin/${FILENAME}
-URL=https://raw.github.com/kersing/multitech-installer/${FILENAME}
+URL=https://raw.github.com/kersing/multitech-installer/master/${FILENAME}
 
 if [ ! -f $STATUSFILE ] ; then
 	touch /var/config/.installer
@@ -590,7 +590,7 @@ fi
 
 # Network should be configured allowing access to remote servers at this point
 #
-wget http://www.thethingsnetwork.org/ -O /dev/null -o /dev/null
+wget http://www.thethingsnetwork.org/ --no-check-certificate -O /dev/null -o /dev/null
 if [ $? -ne 0 ] ; then
 	echo "Error in network settings, cannot access www.thethingsnetwork.org"
 	echo "Check network settings and rerun this script to correct the setup"
@@ -654,6 +654,7 @@ if [ $? -ne 0 ] ; then
 		echo -n "Gateway description: "
 		read descr
 		echo "Include location information?"
+		echo "NOTE: No location information means the gateway status information will not be available on-line"
 		doselect Yes No
 		if [ "$select_result" = "Yes" ] ; then
 			echo "Gateway location information"
@@ -747,5 +748,8 @@ if [ ! -f /var/config/lora/ttn_global_conf.json ] ; then
 	exit 1
 else
 	# Prepare configuration file
-	node /opt/lora/merge.js $conf_dir/ttn_global_conf.json $conf_dir/multitech_overrides.json $conf_dir/global_conf.json
+	node /opt/lora/merge.js /var/config/lora/ttn_global_conf.json /var/config/lora/multitech_overrides.json /var/config/lora/global_conf.json
 fi
+
+# Everything is in place, start forwarder
+/etc/init.d/ttn-pkt-forwarder start
