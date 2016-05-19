@@ -7,13 +7,15 @@ http://www.multitech.net/developer/products/accessory-cards/installing-an-access
 
 2) Download installer.sh
 
-3) Connect to Conduit using the instruction at item 2.
+3) Connect to Conduit using the instruction at item 2 of
 http://www.multitech.net/developer/software/mlinux/getting-started-with-conduit-mlinux/
 
 4) Copy installer.sh to the conduit using Putty SCP (pscp.exe) or scp.
+
 scp installer.sh root@192.168.2.1:
 
 5) Using the connection established in step 3, run the installer.
+
 sh installer.sh
 
 6) Provide answers to the prompts.
@@ -29,6 +31,7 @@ sh installer.sh
    step 6 or the IP address assigned to it by the DHCP server (when using DHCP)
 
 8) Restart the installer to continue installation.
+
 sh installer.sh
 
 Once the installer finished (without errors) the Conduit is connected to TheThingsNetwork.
