@@ -483,10 +483,10 @@ if [ $? -ne 0 ] ; then
 	ok=$select_result
 	case $ok in
 		Yes)
-			if [ ! -f /etc/network/interfaces.org ] ; then
-				mv /etc/network/interfaces /etc/network/interfaces.org
+			if [ ! -f /var/config/network/interfaces.org ] ; then
+				mv /var/config/network/interfaces /etc/network/interfaces.org
 			fi
-			cat << _EOF_ > /etc/network/interfaces
+			cat << _EOF_ > /var/config/network/interfaces
 # /etc/network/interfaces -- configuration file for ifup(8), ifdown(8)
 
 # The loopback interface
@@ -540,7 +540,7 @@ _EOF_
 				doselect Yes No
 				got_it=$select_result
 			done
-			cat << _EOF_ > /etc/network/interfaces
+			cat << _EOF_ > /var/config/network/interfaces
 # /etc/network/interfaces -- configuration file for ifup(8), ifdown(8)
 
 # The loopback interface
