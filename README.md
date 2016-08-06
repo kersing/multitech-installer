@@ -1,7 +1,7 @@
 # multitech-installer
 Installer for TheThingsNetwork on MultiTech Conduit
 
-For detailed instructions see https://www.thethingsnetwork.org/labs/story/configure-your-multitech-aep-conduit-for-the-things-network
+For detailed instructions see https://www.thethingsnetwork.org/labs/story/configure-your-multitech-aep-conduit-for-the-things-network (AEP model) or https://www.thethingsnetwork.org/labs/story/configure-your-multitech-mlinux-conduit-for-the-things-network (mLinux model)
 
 Installation procedure:
 1) Install LORA mCard as per instructions provided by MultiTech at
