@@ -8,23 +8,18 @@
 #
 
 STATUSFILE=/var/config/.installer
-VERSION=2.1-r4
+VERSION=2.1-r5
 FILENAME=poly-packet-forwarder_${VERSION}_arm926ejste.ipk
-#URL=https://raw.github.com/kersing/packet_forwarder/master/multitech-bin/${FILENAME}
 URL=https://raw.github.com/kersing/multitech-installer/master/${FILENAME}
 
-if [ ! -f $STATUSFILE ] ; then
-	touch /var/config/.installer
+grep package $STATUSFILE > /dev/null 2> /dev/null
+if [ $? -eq 0 -a ! -x /opt/lora/poly_pkt_fwd ] ; then
+	# statusfile not reset, but gateway has been reflashed, clear file
+	rm $STATUSFILE
 fi
 
-grep secure $STATUSFILE > /dev/null 2> /dev/null
-if [ $? -ne 0 ] ; then
-	# Start by securing the device
-	echo "Securing access to the device, enter the same password twice and"
-	echo "make sure to save this password as the device requires factory"
-	echo "reset when the password is lost!!"
-	passwd root
-	echo "secure" >> $STATUSFILE
+if [ ! -f $STATUSFILE ] ; then
+	touch $STATUSFILE
 fi
 
 # now set the time zone
@@ -100,6 +95,33 @@ else
       read select_i || exit
     done
   }
+fi
+
+# check for AEP model and ask user to skip network/timezone setup
+# /var/config/db.json is only present on AEP models, use it to detect AEP
+grep network $STATUSFILE > /dev/null 2> /dev/null
+if [ $? -ne 0 -a -f /var/config/db.json ] ; then
+	# Securing the device should be done using the web interface
+	echo "secure" >> $STATUSFILE
+	echo "AEP Model detected, have time zone and network been setup?"
+	doselect Yes No
+	if [ "$select_result" = "No" ] ; then
+		echo "Please configure \"network interfaces\" and \"time\" using the web interface and restart."
+		echo "DO NOT configure \"LoRa Network Server\" in the web interface!"
+		exit
+	fi
+	echo "timezone" >> $STATUSFILE
+	echo "network" >> $STATUSFILE
+fi
+
+grep secure $STATUSFILE > /dev/null 2> /dev/null
+if [ $? -ne 0 ] ; then
+	# Start by securing the device
+	echo "Securing access to the device, enter the same password twice and"
+	echo "make sure to save this password as the device requires factory"
+	echo "reset when the password is lost!!"
+	passwd root
+	echo "secure" >> $STATUSFILE
 fi
 
 grep timezone $STATUSFILE > /dev/null 2> /dev/null
@@ -691,7 +713,7 @@ if [ $? -ne 0 ] ; then
 {
 /* Settings defined in global_conf will be overwritten by those in local_conf */
     "gateway_conf": {
-        /* you must pick a unique 64b number for each gateway (represented by an hex string) */
+        /* gateway_ID is based on unique hardware ID, do not edit */
         "gateway_ID": "$gwid",
         /* Email of gateway operator, max 40 chars*/
         "contact_email": "$email", 
@@ -699,15 +721,21 @@ if [ $? -ne 0 ] ; then
         "description": "$descr",
         /* Enter VALID GPS coordinates below before enabling fake GPS */
 _EOF_
-	if [ X"$lat" != X"0" -o X"$lon" != X"0" ] ; then
-		echo '        "fake_gps": true,' >> /var/config/lora/local_conf.json
-	else
-		echo '        "fake_gps": false,' >> /var/config/lora/local_conf.json
-	fi
-	cat << _EOF_ >> /var/config/lora/local_conf.json
+        if [ X"$lat" != X"0" -o X"$lon" != X"0" ] ; then
+        cat << _EOF_ >> /var/config/lora/local_conf.json
+        "gps": true,
+        "fake_gps": true,
         "ref_latitude": $lat,
         "ref_longitude": $lon,
         "ref_altitude": $alt
+_EOF_
+        else
+        cat << _EOF_ >> /var/config/lora/local_conf.json
+        "gps": false,
+        "fake_gps": false
+_EOF_
+        fi
+        cat << _EOF_ >> /var/config/lora/local_conf.json
     }
 }
 _EOF_
