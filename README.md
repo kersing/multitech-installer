@@ -1,6 +1,8 @@
 # multitech-installer
 Installer for TheThingsNetwork on MultiTech Conduit
 
+For detailed instructions see https://www.thethingsnetwork.org/labs/story/configure-your-multitech-aep-conduit-for-the-things-network
+
 Installation procedure:
 1) Install LORA mCard as per instructions provided by MultiTech at
 http://www.multitech.net/developer/products/accessory-cards/installing-an-accessory-card/
