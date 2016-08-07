@@ -29,12 +29,12 @@ assistance, as you don't want to be doing this on your own.
 
  However, since the Conduit is 192.168.2.1 by default, we recommend the following settings:
 
-Item|Setting
-----|-------
-Address|192.168.2.2
-Netmask|255.255.255.0
-Gateway|none
-DHCP|none
+ Item|Setting
+ ----|-------
+ Address|192.168.2.2
+ Netmask|255.255.255.0
+ Gateway|none
+ DHCP|none
 
  If you're setting up a lot of Conduits, using your everyday PC, you may find it helpful to purchase a cheap
 USB-to-Ethernet adapter. Then you can just plug in the adapter whenever you're configuring a Conduit, and leave
