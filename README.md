@@ -69,19 +69,19 @@ you're using ssh.
  Note that the script says "the gateway wil now shutdown", but you need to press "enter" in order to 
  get the gateway to continue into the shutdown process.  Here's an example:
 
- `The gateway will now shutdown. Remove power once the status led  
- stopped blinking, connect the gateway to the new network and reapply  
- power.  
+ `The gateway will now shutdown. Remove power once the status led`   
+ `stopped blinking, connect the gateway to the new network and reapply`  
+ `power.`  
 
- Press enter to continue`  
+ `Press enter to continue`  
  _(press enter)_
 
- `Broadcast message from root@mtcdt (pts/0) (Sun Aug  7 17:08:03 2016):  
+ `Broadcast message from root@mtcdt (pts/0) (Sun Aug  7 17:08:03 2016):`  
   
- The system is going down for system halt NOW!  
- Connection to 192.168.2.1 closed by remote host.  
- Connection to 192.168.2.1 closed.  
- -bash:myhost::/cygdrive/c/multitech-installer $  `
+ `The system is going down for system halt NOW!`  
+ `Connection to 192.168.2.1 closed by remote host.`  
+ `Connection to 192.168.2.1 closed.`  
+ `-bash:myhost::/cygdrive/c/multitech-installer $ `
 
 7. Once the
    LEDs on the front of the Conduit stop flashing, power the Conduit down and
