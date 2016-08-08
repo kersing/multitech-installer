@@ -45,15 +45,15 @@ into your host computer, you might just want to dedicate that adapter to this pu
 
 5. Copy `installer.sh` to the Conduit using Putty SCP (on Windows, `pscp.exe`) or `scp` (Cygwin, Linux or macOS).
 
-    scp installer.sh root@192.168.2.1:
+  `host-machine $ `**`scp installer.sh root@192.168.2.1:`**
 
 6. Log into the Conduit from your host computer using ssh, and then run the installer. The following example assumes
 you're using ssh.
 
-  host-machine $ **ssh root@192.168.2.1**  
-  Password: _root_ _(note that "root" won't be echoed)_  
-  Last login: Sun Aug  7 15:37:13 2016 from 192.168.2.2  
-  root@mtcdt:~# **sh installer.sh**
+  `host-machine $ `**`ssh root@192.168.2.1`**  
+  `Password: `_root_ _(note that "root" won't be echoed)_  
+  `Last login: Sun Aug  7 15:37:13 2016 from 192.168.2.2`  
+  `root@mtcdt:~# `**`sh installer.sh`**
 
 6. Provide answers to the prompts.  
 
