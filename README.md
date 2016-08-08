@@ -6,9 +6,13 @@ Installation procedure:
 1. Install LORA mCard as per instructions provided by MultiTech at
 http://www.multitech.net/developer/products/accessory-cards/installing-an-accessory-card/
 
-2. Download installer.sh
+2. Choose a computer (Windows, Linux, Mac) to use for configuring the Conduit. We'll call
+this second computer the *host computer*. The host computer *must* have an Ethernet adapter.
 
-3. Connect to Conduit using the instruction at item 2 of
+3. Download `installer.sh` to the host computer (possibly
+by using `git clone` to grab a copy of the repository). 
+
+4. Connect the host computer to Conduit using an Ethernet cable, the instruction at item 2 of
 [http://www.multitech.net/developer/software/mlinux/getting-started-with-conduit-mlinux/].
 For this, you need a second computer. (It could be the one you're using to read this!)  
 We'll call that the *host computer*. You'll need to clone this repository to the host computer, 
@@ -33,8 +37,8 @@ assistance, as you don't want to be doing this on your own.
  ----|-------
  Address|192.168.2.2
  Netmask|255.255.255.0
+ DNS server|none
  Gateway|none
- DHCP|none
 
  If you're setting up a lot of Conduits, using your everyday PC, you may find it helpful to purchase a cheap
 USB-to-Ethernet adapter. Then you can just plug in the adapter whenever you're configuring a Conduit, and leave
@@ -43,15 +47,23 @@ the adapter always pre-configured. That way, you won't interfere with your norma
  Of course, if you usualy use Wi-Fi to connect to the Internet, and you don't use the Ethernet adapter that's built
 into your host computer, you might just want to dedicate that adapter to this purpose.  
 
-4. Copy installer.sh to the conduit using Putty SCP (pscp.exe) or scp.
+5. Copy `installer.sh` to the Conduit using Putty SCP (on Windows, `pscp.exe`) or `scp` (Cygwin, Linux or macOS).
 
     scp installer.sh root@192.168.2.1:
 
-5. Using the connection established in step 3, run the installer.
+6. Log into the Conduit from your host computer using ssh, and then run the installer. The following example assumes
+you're using ssh.
 
-    \# sh installer.sh
+  host-machine $ **ssh root@192.168.2.1**  
+  Password: _root_ _(note that "root" won't be echoed)_  
+  Last login: Sun Aug  7 15:37:13 2016 from 192.168.2.2  
+  root@mtcdt:~# **sh installer.sh**
 
-6. Provide answers to the prompts.
+6. Provide answers to the prompts.  
+
+ Be prepared -- if you have to disconnect your main system from the network, and you want to run a password-generation
+ program, do so before starting the script.
+
    For the network you will need to choose a network with unrestricted access to the
    Internet. However, do not connect the Conduit directly (without firewall) to
    the Internet to prevent possible security issues!
@@ -60,11 +72,38 @@ into your host computer, you might just want to dedicate that adapter to this pu
    LEDs on the front of the Conduit stop flashing, power the Conduit down and
    connect it to the target network.
 
+ Note that the script says "the gateway wil now shutdown", but you need to press "enter" in order to 
+ get the gateway to continue into the shutdown process.  Here's an example:
+
+ The gateway will now shutdown. Remove power once the status led  
+ stopped blinking, connect the gateway to the new network and reapply  
+ power.  
+
+ Press enter to continue  
+ _(press enter)_
+
+ Broadcast message from root@mtcdt (pts/0) (Sun Aug  7 17:08:03 2016):  
+  
+ The system is going down for system halt NOW!  
+ Connection to 192.168.2.1 closed by remote host.  
+ Connection to 192.168.2.1 closed.  
+ -bash:myhost::/cygdrive/c/multitech-installer $  
+
+
 7. Log on to the Conduit using putty/ssh with the IP address information provided in
    step 6 or the IP address assigned to it by the DHCP server (when using DHCP)
 
 8. Restart the installer to continue installation.
 
-    \# sh installer.sh
+    root@mtcdt:~# **sh installer.sh**
 
- Once the installer finishes (without errors) the Conduit is connected to The Things Network.
+ There may be a three or four-second pause while the installer is setting the time. Then you'll see:
+
+  7 Aug 17:18:27 ntpdate[519]: step time server 195.50.171.101 offset -393.789308 sec  
+  SETUP FREQUENCY PLAN  
+  Please select the configuration:  
+  \1) EU868  
+  \2) AU915  
+  \3) US915  
+
+ Once the installer finishes (without errors), the Conduit has been connected to The Things Network.
