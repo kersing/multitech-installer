@@ -93,16 +93,16 @@ you're using ssh.
 
 9. Restart the installer to continue installation.
 
-    root@mtcdt:~# **sh installer.sh**
+    `root@mtcdt:~# `**`sh installer.sh`**
 
  There may be a three or four-second pause while the installer is setting the time. Then you'll see:
 
-  `7 Aug 17:18:27 ntpdate[519]: step time server 195.50.171.101 offset -393.789308 sec  
-  SETUP FREQUENCY PLAN  
-  Please select the configuration:  
-  1) EU868  
-  2) AU915  
-  3) US915`  
+  `7 Aug 17:18:27 ntpdate[519]: step time server 195.50.171.101 offset -393.789308 sec`  
+  `SETUP FREQUENCY PLAN`  
+  `Please select the configuration:`  
+  `1) EU868`  
+  `2) AU915`  
+  `3) US915`  
 
  Answer the questions at each prompt, and the installer will configure your Conduit as needed.
 
