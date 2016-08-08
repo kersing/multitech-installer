@@ -102,8 +102,19 @@ you're using ssh.
   7 Aug 17:18:27 ntpdate[519]: step time server 195.50.171.101 offset -393.789308 sec  
   SETUP FREQUENCY PLAN  
   Please select the configuration:  
-  \1) EU868  
-  \2) AU915  
-  \3) US915  
+  1) EU868  
+  2) AU915  
+  3) US915  
 
- Once the installer finishes (without errors), the Conduit has been connected to The Things Network.
+ Answer the questions at each prompt, and the installer will configure your Conduit as needed.
+
+9. When you're prompted for latitude and longitude, your best bet is to go to Google Maps. If you click on the location
+ of your gateway, you'll see the latitude and longitude in a box at the bottom of the screen.
+
+10. When you're prompted for the altitude, you should enter it in meters. (This is what's conventionally called the 
+ "elevation" in mapping applications.) As of this writing, http://www.mapdevelopers.com/elevation_calculator.php 
+ had a simple UI: enter the address and you get back the elevation, plus a map that you can click on for further 
+ refinement. The elevation given by mapping apps is at ground level; if your gateway is substantially above ground i
+ level, you may want to increase the number. 
+
+Once the installer finishes (without errors), the Conduit has been connected to The Things Network.
