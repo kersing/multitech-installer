@@ -1,39 +1,42 @@
-# multitech-installer
-Installer for TheThingsNetwork on MultiTech Conduit
+# MultiTech Conduit TTN Installer
 
-For detailed instructions see https://www.thethingsnetwork.org/labs/story/configure-your-multitech-aep-conduit-for-the-things-network (AEP model) or https://www.thethingsnetwork.org/labs/story/configure-your-multitech-mlinux-conduit-for-the-things-network (mLinux model)
+For detailed instructions see:
 
-Installation procedure:
-1) Install LORA mCard as per instructions provided by MultiTech at
-http://www.multitech.net/developer/products/accessory-cards/installing-an-accessory-card/
+- [AEP model](docs/_aep.md)
+- [mLinux moel](docs/_mlinux.md)
 
-2) Download installer.sh
+## Installation
 
-3) Connect to Conduit using the instruction at item 2 of
-http://www.multitech.net/developer/software/mlinux/getting-started-with-conduit-mlinux/
+1.  Install LORA mCard as per [instructions](http://www.multitech.net/developer/products/accessory-cards/installing-an-accessory-card/) provided by MultiTech.
 
-4) Copy installer.sh to the conduit using Putty SCP (pscp.exe) or scp.
+2.  Download [installer.sh](installer.sh).
 
-scp installer.sh root@192.168.2.1:
+3.  Connect to Conduit using the [instruction at item 2](http://www.multitech.net/developer/software/mlinux/getting-started-with-conduit-mlinux/).
 
-5) Using the connection established in step 3, run the installer.
+4.  Copy [installer.sh](installer.sh) to the conduit using Putty SCP (`pscp.exe`) on Windows or `scp` on Mac/Linux:
 
-sh installer.sh
+    ```bash
+    scp installer.sh root@192.168.2.1:
+    ```
 
-6) Provide answers to the prompts.
-   For the network you will need to choose a network with unrestricted access to the
-   Internet. However, do not connect the Conduit directly (without firewall) to
-   the Internet to prevent possible security issues!
+5.  Using the connection established in step 3, run the installer.
 
-   After the network settings have been provided the Conduit shuts down, once the
-   leds on the front of the conduit stopped flashing, power the conduit down and
-   connect it to the target network.
+    ```bash
+    sh installer.sh
+    ```
 
-7) Log on to the Conduit using putty/ssh with the IP address information provided in
-   step 6 or the IP address assigned to it by the DHCP server (when using DHCP)
+6.  Provide answers to the prompts.
 
-8) Restart the installer to continue installation.
+    * For the network you will need to choose a network with unrestricted access to the Internet. However, do not connect the Conduit directly (without firewall) to the Internet to prevent possible security issues!
 
-sh installer.sh
+    After the network settings have been provided the Conduit shuts down, once the leds on the front of the conduit stopped flashing, power the conduit down and connect it to the target network.
 
-Once the installer finished (without errors) the Conduit is connected to TheThingsNetwork.
+7. Log on to the Conduit using putty/ssh with the IP address information provided in step 6 or the IP address assigned to it by the DHCP server (when using DHCP)
+
+8.  Restart the installer to continue installation.
+
+    ```bash
+    sh installer.sh
+    ```
+
+    Once the installer finished (without errors) the Conduit is connected to TheThingsNetwork.
