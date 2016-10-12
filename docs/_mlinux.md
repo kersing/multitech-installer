@@ -1,15 +1,9 @@
-# MultiTech mLinux Conduit
+# mLinux model
+mLinux is an open source embedded Linux distribution for the MultiConnect Conduit and is the next generation version of CoreCDP.
 
-## Install the LoRa mCard
+## Prepare USB stick
 
-Before we start configuring the software you need to install the LoRa mCard. Use the [instructions](http://www.multitech.net/developer/products/accessory-cards/installing-an-accessory-card/) provided by MultiTech. Do not forget to mount the antenna to the mCard after fitting it in the conduit.
-
-> There is no need to update any of the MultiTech software on the conduit.
-
-## Prerequisites
-
-* Terminal software. Included with Mac OS and Linux. For Windows use something like [Putty](http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html).
-* A FAT or FAT32 formatted USB stick with the [installer.sh](https://github.com/kersing/multitech-installer/raw/master/installer.sh) downloaded to it.
+Find a FAT or FAT32 formatted USB stick and download [installer.sh](https://github.com/kersing/multitech-installer/raw/master/installer.sh) to it.
 
 ## Connect
 
@@ -49,7 +43,7 @@ Now connect to the USB device using `115200` for speed. For example:
 screen /dev/cu.usbserial 115200
 ```
 
-## Login
+## Login via terminal
 
 Connect the Conduit's power cable. You will now see its boot messages. Wait for the login prompt to appear:
 
@@ -60,7 +54,7 @@ The default credentials are:
 * **Username**: `root`
 * **Password**: `root `
 
-## Copy the installer
+## Copy installer
 
 To get the installer we need mount the USB drive:
 
@@ -122,7 +116,7 @@ Login as user `root` with the password you set via the installer.
 
 ![login as: root](login-root.png)
 
-## TTN Configuration
+## Configure mLinux for TTN
 
 Now restart the installer and provide the required answers when prompted:
 

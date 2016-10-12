@@ -1,10 +1,6 @@
-# MultiTech AEP Conduit
+# AEP model
 
-## Install the LoRa mCard
-
-Before we start configuring the software you need to install the LoRa mCard. Use the [instructions](http://www.multitech.net/developer/products/accessory-cards/installing-an-accessory-card/) provided by MultiTech. Do not forget to mount the antenna to the mCard after fitting it in the conduit.
-
-## Login
+## Login to web interface
 
 To start configuring your conduit connect a computer to its LAN interface and open a browser to `http://192.168.2.1/`. This opens the login dialog for the configuration interface of the conduit:
 
@@ -96,7 +92,7 @@ You will be prompted to confirm the restart. Choose **OK** to proceed.
 
 Disconnect the temporary network cable and connect the Conduit to the target network while it is restarting.
 
-## TTN Configuration
+## Configure AEP for TTN
 
 Once the Conduit has finished restarting and is connected to the target network, connect a computer to the same network and login to the Conduit.
 
