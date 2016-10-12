@@ -6,7 +6,7 @@ Before we start configuring the software you need to install the LoRa mCard. Use
 
 ## Login
 
-To start configuring your conduit connect a computer to its LAN interface and open a browser to [http://192.168.2.1/](http://192.168.2.1/). This opens the login dialog for the configuration interface of the conduit:
+To start configuring your conduit connect a computer to its LAN interface and open a browser to `http://192.168.2.1/`. This opens the login dialog for the configuration interface of the conduit:
 
 ![Login](login-aep.png)
 
