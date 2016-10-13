@@ -1,4 +1,4 @@
-# AEP model
+# Configure AEP model
 
 ## Login to web interface
 
@@ -92,7 +92,7 @@ You will be prompted to confirm the restart. Choose **OK** to proceed.
 
 Disconnect the temporary network cable and connect the Conduit to the target network while it is restarting.
 
-## Configure AEP for TTN
+## TTN Configuration {#ttn-configuration-aep}
 
 Once the Conduit has finished restarting and is connected to the target network, connect a computer to the same network and login to the Conduit.
 
@@ -108,7 +108,7 @@ Once the Conduit has finished restarting and is connected to the target network,
 
 * For Linux/OSX open terminal and connect via `ssh admin@<IP>`.
 
-Download the installer by entering the next command:
+Download the [installer](https://github.com/kersing/multitech-installer/raw/master/installer.sh) by entering the next command:
 
 ```bash
 wget https://github.com/kersing/multitech-installer/raw/master/installer.sh --no-check-certificate
@@ -123,5 +123,3 @@ sh installer.sh
 ```
 
 ![installer](installer-aep.png)
-
-👏 Your gateway is now connected to The Things Network!
