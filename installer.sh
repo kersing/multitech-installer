@@ -781,3 +781,9 @@ fi
 
 # Everything is in place, start forwarder
 /etc/init.d/ttn-pkt-forwarder start
+
+echo "The installation is now complete. Please register your gateway"
+echo "at The Things Network ( https://www.thethingsnetwork.org ,"
+echo "click on 'Hi <your name>' at the right of the menu bar, select"
+echo "'My Profile', scroll down to select 'Add Gateway') using"
+echo "gateway ID: $gwid"
