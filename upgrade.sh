@@ -11,7 +11,7 @@ STATUSFILE=/var/config/.installer
 VERSION=2.1-r5
 FILENAME=poly-packet-forwarder_${VERSION}_arm926ejste.ipk
 #URL=https://raw.github.com/kersing/packet_forwarder/master/multitech-bin/${FILENAME}
-URL=https://raw.github.com/kersing/multitech-installer/master/${FILENAME}
+URL=https://github.com/vm2m/multitech-installer/raw/naxoo/${FILENAME}
 
 if [ ! -f $STATUSFILE ] ; then
 	touch /var/config/.installer
@@ -96,30 +96,7 @@ fi
 grep location $STATUSFILE > /dev/null 2> /dev/null
 if [ $? -ne 0  -a ! -f /var/config/lora/global_conf_src ] ; then
 	echo "SETUP FREQUENCY PLAN"
-	lora_id=$(mts-io-sysfs show lora/product-id 2> /dev/null)
-	config=""
-	if [ "$lora_id" == "MTAC-LORA-868" ] ; then
-		echo "Detected 868MHz card, use TTN 868 configuation?"
-		doselect Yes No
-		if [ "$select_result" == "Yes" ] ; then
-			config="https://raw.githubusercontent.com/TheThingsNetwork/gateway-conf/master/EU-global_conf.json"
-		fi
-	fi
-	if [ X"$config" == X"" ] ; then
-		echo "Please select the configuration:"
-		doselect EU868 AU915 US915
-		case $select_result in
-			EU868)
-				config="https://raw.githubusercontent.com/TheThingsNetwork/gateway-conf/master/EU-global_conf.json"
-				;;
-			AU915)
-				config="https://raw.githubusercontent.com/TheThingsNetwork/gateway-conf/master/AU-global_conf.json"
-				;;
-			US915)
-				config="https://raw.githubusercontent.com/TheThingsNetwork/gateway-conf/master/US-global_conf.json"
-				;;
-		esac
-	fi
+	config="https://raw.githubusercontent.com/vm2m/gateway-conf/master/NAXOO-global_conf.json"
 	echo "$config" > /var/config/lora/global_conf_src
 	echo "location" >> $STATUSFILE
 fi
