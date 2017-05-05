@@ -8,12 +8,12 @@
 #
 
 STATUSFILE=/var/config/.installer
-VERSION=3.0.0-r2
+VERSION=3.0.0-r1
 FILENAME=mp-packet-forwarder_${VERSION}_arm926ejste.ipk
 URL=https://raw.github.com/kersing/multitech-installer/master/${FILENAME}
 
 grep package $STATUSFILE > /dev/null 2> /dev/null
-if [ $? -eq 0 ] ; then
+if [ $? -eq 0 ]
 	if [ ! -x /opt/lora/mp_pkt_fwd -a ! -x /opt/lora/poly_pkt_fwd ] ; then
 		# statusfile not reset, but gateway has been reflashed, clear file
 		rm $STATUSFILE
@@ -638,117 +638,122 @@ if [ ! -d /var/config/lora ] ; then
 	mkdir /var/config/lora
 fi	
 
-skip=0
-gwname=""
-gwkey=""
-grep '"serv_type": "ttn"' /var/config/lora/local_conf.json > /dev/null 2> /dev/null
-if [ $? -eq 0 ] ; then
-	echo "Gateway seems to be configured for TTN already, update configuration?"
-	doselect Yes No
-	if [ "$select_result" == "No" ] ; then
-		skip=1
-	else
-		gwname=$(grep -oE '"serv_gw_id": "[^\\"]*"' /var/config/lora/local_conf.json | sed -e 's/.*": "//' -e 's/"//g')
-		gwkey=$(grep -oE '"serv_gw_key": "[^\\"]*"' /var/config/lora/local_conf.json | sed -e 's/.*": "//' -e 's/"//g')
-	fi
-fi
-
-if [ $skip -eq 0 ] ; then
-	# Get data from TTN console
-	echo "Provide the gateway registration data from the TTN console"
-	echo "gateway should registered using 'gateway-connector'"
-	echo "See help at https://www.thethingsnetwork.org/docs/gateways/registration.html#via-gateway-connector"
-
-	while :; do
-		if [ X"$gwkey" -eq X"" ] ; then
-			echo "Please enter gateway informtion:"
-			echo -n "Gateway ID: "
-			read gwname
-			echo -n "Gateway Key: "
-			read gwkey
-		fi
-		echo
-		echo "Gateway ID: $gwname"
-		echo "Gateway Key: $gwkey"
-		echo "Are these values correct?"
+# Ask for location/configuration
+grep location $STATUSFILE > /dev/null 2> /dev/null
+if [ $? -ne 0 ] ; then
+	echo "SETUP FREQUENCY PLAN"
+	lora_id=$(mts-io-sysfs show lora/product-id 2> /dev/null)
+	config=""
+	if [ "$lora_id" == "MTAC-LORA-868" ] ; then
+		echo "Detected 868MHz card, use TTN 868 configuation?"
 		doselect Yes No
 		if [ "$select_result" == "Yes" ] ; then
-			wget --header="Key: $gwkey" https://account.thethingsnetwork.org/gateways/$gwname -O /tmp/gwinfo -o /tmp/getres --no-check-certificate
-			grep "frequency_plan" /tmp/gwinfo > /dev/null 2> /dev/null
-			if [ $? -eq 0 ] ; then
-				break
-			else
-				echo "Could not get configuration information."
-				tail -2 /tmp/getres | head -1
-			fi
-		else
-			gwname=""
-			gwkey=""
+			config="https://raw.githubusercontent.com/TheThingsNetwork/gateway-conf/master/EU-global_conf.json"
 		fi
-	done
+	fi
+	if [ X"$config" == X"" ] ; then
+		echo "Please select the configuration:"
+		doselect EU868 AU915 US915
+		case $select_result in
+			EU868)
+				config="https://raw.githubusercontent.com/TheThingsNetwork/gateway-conf/master/EU-global_conf.json"
+				;;
+			AU915)
+				config="https://raw.githubusercontent.com/TheThingsNetwork/gateway-conf/master/AU-global_conf.json"
+				;;
+			US915)
+				config="https://raw.githubusercontent.com/TheThingsNetwork/gateway-conf/master/US-global_conf.json"
+				;;
+		esac
+	fi
+	echo "$config" > /var/config/lora/global_conf_src
+	echo "location" >> $STATUSFILE
+fi
 
-	frequrl=$(grep -oE '"frequency_plan_url":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
-	freqplan=$(grep -oE '"frequency_plan":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
-	router=$(grep -oE '"router":\{"[^\}]*},' /tmp/gwinfo | grep -oE '"mqtt_address":"[^\\"]*"' | sed -e 's#mqt.*://##' -e 's/.*":"//' -e 's/"//g' -e 's/:.*//')
-	descr=$(grep -oE '"description":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
-
-	# Create lora configuration directory and initial files
+# Create lora configuration directory and initial files
+grep loraconf $STATUSFILE > /dev/null 2> /dev/null
+if [ $? -ne 0 ] ; then
 	got_it="No"
 	while [ "$got_it" != "Yes" ] ; do
 		echo "SETUP LORA GATEWAY CONFIGURATION"
 		echo -n "E-mail address of gateway operator: "
 		read email
+		echo -n "Gateway description: "
+		read descr
+		echo "Include location information?"
+		echo "NOTE: No location information means the gateway status information will not be available on-line"
+		doselect Yes No
+		if [ "$select_result" = "Yes" ] ; then
+			echo "Gateway location information"
+			echo -n "latitude: "
+			read lat
+			echo -n "longitude: "
+			read lon
+			echo -n "altitude: "
+			read alt
+		else
+			lat=0
+			lon=0
+			alt=0
+		fi
 		echo ""
-		echo "Description (from TTN): $descr"
-		echo "Frequency plan (from TTN): $freqplan"
+		echo "Your gateway information is:"
+		echo "e-mail contact: $email"
+		echo "description   : $descr"
+		if [ X"$lat" != X"0" -o X"$lon" != X"0" ] ; then
+			echo "Check Location: https://maps.google.com/?q=$lat,$lon"
+		fi
 		echo ""
 		echo "Is the information correct?"
 		doselect Yes No
 		got_it=$select_result
 	done
-	echo -n "$frequrl" > /var/config/lora/global_conf_src
 	gwid=$(mts-io-sysfs show lora/eui 2> /dev/null | sed 's/://g')
 	if [ X"$gwid" == X"" ] ; then
 		echo "FATAL ERROR: could not obtain gateway id, Lora card not found"
 		exit 1
 	fi
 
-		cat << _EOF_ > /var/config/lora/local_conf.json
+	cat << _EOF_ > /var/config/lora/local_conf.json
 {
 /* Settings defined in global_conf will be overwritten by those in local_conf */
     "gateway_conf": {
-	/* gateway_ID is based on unique hardware ID, do not edit */
-	"gateway_ID": "$gwid",
-	/* Email of gateway operator, max 40 chars*/
-	"contact_email": "$email", 
-	/* Public description of this device, max 64 chars */
-	"description": "$descr",
-	"gps": false,
-	"fake_gps": false,
-	"servers": [
-		{
-			"serv_type": "ttn",
-			"server_address": "$router",
-			"serv_gw_id": "$gwname",
-			"serv_gw_key": "$gwkey",
-			"serv_enabled": true
-		}
-	]
+        /* gateway_ID is based on unique hardware ID, do not edit */
+        "gateway_ID": "$gwid",
+        /* Email of gateway operator, max 40 chars*/
+        "contact_email": "$email", 
+        /* Public description of this device, max 64 chars */
+        "description": "$descr",
+        /* Enter VALID GPS coordinates below before enabling fake GPS */
+_EOF_
+        if [ X"$lat" != X"0" -o X"$lon" != X"0" ] ; then
+        cat << _EOF_ >> /var/config/lora/local_conf.json
+        "gps": true,
+        "fake_gps": true,
+        "ref_latitude": $lat,
+        "ref_longitude": $lon,
+        "ref_altitude": $alt
+_EOF_
+        else
+        cat << _EOF_ >> /var/config/lora/local_conf.json
+        "gps": false,
+        "fake_gps": false
+_EOF_
+        fi
+        cat << _EOF_ >> /var/config/lora/local_conf.json
     }
 }
 _EOF_
+	echo "loraconf" >> $STATUSFILE
 fi
 
 # Disable the MultiTech lora server processes
+# Do we want to remove the software as well??
 grep disable-mtech $STATUSFILE > /dev/null 2> /dev/null
 if [ $? -ne 0 ] ; then
 	echo "Disable MultiTech packet forwarder"
 	/etc/init.d/lora-network-server stop
-	update-rc.d -f lora-network-server remove > /dev/null 2> /dev/null
-	if [ -f /etc/init.d/lora-packet-forwarder ] ; then
-		/etc/init.d/lora-packet-forwarder stop
-		update-rc.d -f lora-packet-forwarder remove > /dev/null 2> /dev/null
-	fi
+	/etc/init.d/lora-packet-forwarder stop
 	cat << _EOF_ > /etc/default/lora-network-server
 # set to "yes" or "no" to control starting on boot
 ENABLED="no"
@@ -759,31 +764,30 @@ _EOF_
 ENABLED="no"
 _EOF_
 	fi
+	update-rc.d -f lora-network-server remove > /dev/null 2> /dev/null
+	if [ -f /etc/init.d/lora-packet-forwarder ] ; then
+		update-rc.d -f lora-packet-forwarder remove > /dev/null 2> /dev/null
+	fi
 	echo "disable-mtech" >> $STATUSFILE
-fi
-
-if [ -f /etc/init.d/ttn-pkt-forwarder ] ; then
-	echo "Stopping existing forwarder"
-	/etc/init.d/ttn-pkt-forwarder stop
 fi
 
 # Check for previous forwarder
 opkg list-installed poly-packet-forwarder | grep poly-packet-forwarder > /dev/null 2> /dev/null
 if [ $? -eq 0 ] ; then
-	echo "Removing obsolete Poly Packet Forwarder"
+	echo "Removing obsolete poly forwarder"
 	opkg remove poly-packet-forwarder
 fi
 
-fnd=$(opkg list-installed mp-packet-forwarder)
-version=$(echo $fnd | cut -d' ' -f 3)
-if [ X"$version" != X"$VERSION" ] ; then
-	wget $URL -O /tmp/$FILENAME -o /dev/null --no-check-certificate
-	if [ X"$version" == X"" ] ; then
+grep mp-package $STATUSFILE > /dev/null 2> /dev/null
+if [ $? -ne 0 ] ; then
+	fnd=$(opkg list-installed poly-packet-forwarder)
+	version=$(echo $fnd | cut -d' ' -f 3)
+	if [ X"$version" != X"$VERSION" ] ; then
 		echo "Installing TTN Multi Protocol Packet Forwarder"
-	else
-		echo "Upgrading TTN Multi Protocol Packet Forwarder"
+		wget $URL -O /tmp/$FILENAME -o /dev/null --no-check-certificate
+		opkg install /tmp/$FILENAME
 	fi
-	opkg install /tmp/$FILENAME
+	echo "mp-package" >> $STATUSFILE
 fi
 
 # Get global config
@@ -801,7 +805,8 @@ fi
 # Everything is in place, start forwarder
 /etc/init.d/ttn-pkt-forwarder start
 
-echo "The installation is now complete."
-echo "Check the gateway output using:"
-echo "tail -f /var/log/lora-pkt-fwd.log"
-echo "(It might take some minutes for the first output to appear!)"
+echo "The installation is now complete. Please register your gateway"
+echo "at The Things Network ( https://www.thethingsnetwork.org ,"
+echo "click on 'Hi <your name>' at the right of the menu bar, select"
+echo "'My Profile', scroll down to select 'Add Gateway') using"
+echo "gateway ID: $gwid"
