@@ -660,7 +660,7 @@ if [ $skip -eq 0 ] ; then
 	echo "See help at https://www.thethingsnetwork.org/docs/gateways/registration.html#via-gateway-connector"
 
 	while :; do
-		if [ X"$gwkey" -eq X"" ] ; then
+		if [ X"$gwkey" == X"" ] ; then
 			echo "Please enter gateway informtion:"
 			echo -n "Gateway ID: "
 			read gwname
