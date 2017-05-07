@@ -659,6 +659,11 @@ if [ $skip -eq 0 ] ; then
 	echo "gateway should registered using 'gateway-connector'"
 	echo "See help at https://www.thethingsnetwork.org/docs/gateways/registration.html#via-gateway-connector"
 
+	frequrl="";
+	freqplan="";
+	router="";
+	descr="";
+
 	while :; do
 		if [ X"$gwkey" == X"" ] ; then
 			echo "Please enter gateway informtion:"
@@ -676,6 +681,24 @@ if [ $skip -eq 0 ] ; then
 			wget --header="Key: $gwkey" https://account.thethingsnetwork.org/gateways/$gwname -O /tmp/gwinfo -o /tmp/getres --no-check-certificate
 			grep "frequency_plan" /tmp/gwinfo > /dev/null 2> /dev/null
 			if [ $? -eq 0 ] ; then
+			frequrl=$(grep -oE '"frequency_plan_url":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
+			freqplan=$(grep -oE '"frequency_plan":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
+			router=$(grep -oE '"router":\{"[^\}]*},' /tmp/gwinfo | grep -oE '"mqtt_address":"[^\\"]*"' | sed -e 's#mqt.*://##' -e 's/.*":"//' -e 's/"//g' -e 's/:.*//')
+			descr=$(grep -oE '"description":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
+
+			# check for valid router information
+			if [ X"$router" == X"" ] ; then
+				echo ""
+				echo ""
+				echo ""
+				echo ""
+				echo "ERROR:"
+				echo "Router value not set in TTN console. "
+				echo "Please go to gateway 'Settings' and select"
+				echo "the correct router for your region and retry."
+				echo ""
+				continue
+			fi
 				break
 			else
 				echo "Could not get configuration information."
@@ -687,10 +710,6 @@ if [ $skip -eq 0 ] ; then
 		fi
 	done
 
-	frequrl=$(grep -oE '"frequency_plan_url":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
-	freqplan=$(grep -oE '"frequency_plan":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
-	router=$(grep -oE '"router":\{"[^\}]*},' /tmp/gwinfo | grep -oE '"mqtt_address":"[^\\"]*"' | sed -e 's#mqt.*://##' -e 's/.*":"//' -e 's/"//g' -e 's/:.*//')
-	descr=$(grep -oE '"description":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
 
 	# Create lora configuration directory and initial files
 	got_it="No"
