@@ -8,19 +8,14 @@
 #
 
 STATUSFILE=/var/config/.installer
-VERSION=3.0.0-r1
-FILENAME=mp-packet-forwarder_${VERSION}_arm926ejste.ipk
+VERSION=2.1-r5
+FILENAME=poly-packet-forwarder_${VERSION}_arm926ejste.ipk
 URL=https://raw.github.com/kersing/multitech-installer/master/${FILENAME}
 
 grep package $STATUSFILE > /dev/null 2> /dev/null
-if [ $? -eq 0 ]
-	if [ ! -x /opt/lora/mp_pkt_fwd -a ! -x /opt/lora/poly_pkt_fwd ] ; then
-		# statusfile not reset, but gateway has been reflashed, clear file
-		rm $STATUSFILE
-		# and remove software to force re-install
-		opkg remove poly-packet-forwarder > dev/null 2>&1
-		opkg remove mp-packet-forwarder > dev/null 2>&1
-	fi
+if [ $? -eq 0 -a ! -x /opt/lora/poly_pkt_fwd ] ; then
+	# statusfile not reset, but gateway has been reflashed, clear file
+	rm $STATUSFILE
 fi
 
 if [ ! -f $STATUSFILE ] ; then
@@ -753,41 +748,23 @@ grep disable-mtech $STATUSFILE > /dev/null 2> /dev/null
 if [ $? -ne 0 ] ; then
 	echo "Disable MultiTech packet forwarder"
 	/etc/init.d/lora-network-server stop
-	/etc/init.d/lora-packet-forwarder stop
 	cat << _EOF_ > /etc/default/lora-network-server
 # set to "yes" or "no" to control starting on boot
 ENABLED="no"
 _EOF_
-	if [ -f /etc/default/lora-packet-forwarder ] ; then
-		cat << _EOF_ > /etc/default/lora-packet-forwarder
-# set to "yes" or "no" to control starting on boot
-ENABLED="no"
-_EOF_
-	fi
-	update-rc.d -f lora-network-server remove > /dev/null 2> /dev/null
-	if [ -f /etc/init.d/lora-packet-forwarder ] ; then
-		update-rc.d -f lora-packet-forwarder remove > /dev/null 2> /dev/null
-	fi
 	echo "disable-mtech" >> $STATUSFILE
 fi
 
-# Check for previous forwarder
-opkg list-installed poly-packet-forwarder | grep poly-packet-forwarder > /dev/null 2> /dev/null
-if [ $? -eq 0 ] ; then
-	echo "Removing obsolete poly forwarder"
-	opkg remove poly-packet-forwarder
-fi
-
-grep mp-package $STATUSFILE > /dev/null 2> /dev/null
+grep package $STATUSFILE > /dev/null 2> /dev/null
 if [ $? -ne 0 ] ; then
 	fnd=$(opkg list-installed poly-packet-forwarder)
 	version=$(echo $fnd | cut -d' ' -f 3)
 	if [ X"$version" != X"$VERSION" ] ; then
-		echo "Installing TTN Multi Protocol Packet Forwarder"
+		echo "Installing TTN Poly Packet Forwarder"
 		wget $URL -O /tmp/$FILENAME -o /dev/null --no-check-certificate
 		opkg install /tmp/$FILENAME
 	fi
-	echo "mp-package" >> $STATUSFILE
+	echo "package" >> $STATUSFILE
 fi
 
 # Get global config
