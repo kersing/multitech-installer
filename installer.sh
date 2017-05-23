@@ -18,8 +18,8 @@ if [ $? -eq 0 ] ; then
 		# statusfile not reset, but gateway has been reflashed, clear file
 		rm $STATUSFILE
 		# and remove software to force re-install
-		opkg remove poly-packet-forwarder > dev/null 2>&1
-		opkg remove mp-packet-forwarder > dev/null 2>&1
+		opkg remove poly-packet-forwarder > /dev/null 2>&1
+		opkg remove mp-packet-forwarder > /dev/null 2>&1
 	fi
 fi
 
