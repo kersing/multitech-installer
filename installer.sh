@@ -8,7 +8,7 @@
 #
 
 STATUSFILE=/var/config/.installer
-VERSION=3.0.0-r14
+VERSION=3.0.20-r1
 FILENAME=mp-packet-forwarder_${VERSION}_arm926ejste.ipk
 URL=https://raw.github.com/kersing/multitech-installer/master/${FILENAME}
 
@@ -656,8 +656,7 @@ fi
 if [ $skip -eq 0 ] ; then
 	# Get data from TTN console
 	echo "Provide the gateway registration data from the TTN console"
-	echo "gateway should registered using 'gateway-connector'"
-	echo "See help at https://www.thethingsnetwork.org/docs/gateways/registration.html#via-gateway-connector"
+	echo "gateway should be registered *NOT* using 'legacy packet forwarder'"
 
 	frequrl="";
 	freqplan="";
@@ -686,6 +685,9 @@ if [ $skip -eq 0 ] ; then
 			router=$(grep -oE '"router":\{"[^\}]*},' /tmp/gwinfo | grep -oE '"mqtt_address":"[^\\"]*"' | sed -e 's#mqt.*://##' -e 's/.*":"//' -e 's/"//g' -e 's/:.*//')
 			descr=$(grep -oE '"description":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
 
+			if [ X"$router" == X"thethings.meshed.com.au" ] ; then
+				router="$router:1882"
+			fi
 			# check for valid router information
 			if [ X"$router" == X"" ] ; then
 				echo ""
