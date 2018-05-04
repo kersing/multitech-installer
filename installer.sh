@@ -688,6 +688,9 @@ if [ $skip -eq 0 ] ; then
 			if [ X"$router" == X"thethings.meshed.com.au" ] ; then
 				router="$router:1882"
 			fi
+			if [ X"$router" == X"ttn.opennetworkinfrastructure.org" ] ; then
+				router="$router:1882"
+			fi
 			# check for valid router information
 			if [ X"$router" == X"" ] ; then
 				echo ""
