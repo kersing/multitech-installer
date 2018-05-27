@@ -8,7 +8,7 @@
 #
 
 STATUSFILE=/var/config/.installer
-VERSION=3.0.20-r1
+VERSION=3.0.21-r1
 FILENAME=mp-packet-forwarder_${VERSION}_arm926ejste.ipk
 URL=https://raw.github.com/kersing/multitech-installer/master/${FILENAME}
 
