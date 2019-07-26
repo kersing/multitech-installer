@@ -617,9 +617,9 @@ fi
 
 # Network should be configured allowing access to remote servers at this point
 #
-wget http://www.thethingsnetwork.org/ --no-check-certificate -O /dev/null -o /dev/null
+wget https://account.thethingsnetwork.org/ --no-check-certificate -O /dev/null -o /dev/null
 if [ $? -ne 0 ] ; then
-	echo "Error in network settings, cannot access www.thethingsnetwork.org"
+	echo "Error in network settings, cannot access account.thethingsnetwork.org"
 	echo "Check network settings and rerun this script to correct the setup"
 	grep -v network $STATUSFILE > $STATUSFILE.tmp
 	mv $STATUSFILE.tmp $STATUSFILE
