@@ -617,7 +617,7 @@ fi
 
 # Network should be configured allowing access to remote servers at this point
 #
-wget http://www.thethingsnetwork.org/ --no-check-certificate -O /dev/null -o /dev/null
+wget http://www.thethingsnetwork.org/ -U "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36"  --no-check-certificate -O /dev/null -o /dev/null
 if [ $? -ne 0 ] ; then
 	echo "Error in network settings, cannot access www.thethingsnetwork.org"
 	echo "Check network settings and rerun this script to correct the setup"
