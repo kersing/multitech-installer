@@ -8,7 +8,7 @@
 #
 
 STATUSFILE=/var/config/.installer
-VERSION=3.0.21-r1
+VERSION=3.0.25-r2
 FILENAME=mp-packet-forwarder_${VERSION}_arm926ejste.ipk
 URL=https://raw.github.com/kersing/multitech-installer/master/${FILENAME}
 
@@ -619,7 +619,7 @@ fi
 #
 wget https://www.github.com/ --no-check-certificate -O /dev/null -o /dev/null
 if [ $? -ne 0 ] ; then
-	echo "Error in network settings, cannot access www.thethingsnetwork.org"
+	echo "Error in network settings, cannot access www.github.com"
 	echo "Check network settings and rerun this script to correct the setup"
 	grep -v network $STATUSFILE > $STATUSFILE.tmp
 	mv $STATUSFILE.tmp $STATUSFILE
