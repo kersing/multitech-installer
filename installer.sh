@@ -12,6 +12,11 @@ VERSION=3.0.25-r2
 FILENAME=mp-packet-forwarder_${VERSION}_arm926ejste.ipk
 URL=https://raw.github.com/kersing/multitech-installer/master/${FILENAME}
 
+if [ X"$ACCOUNT_SERVER_DOMAIN" == X"" ]
+then
+  ACCOUNT_SERVER_DOMAIN=account.thethingsnetwork.org
+fi
+
 grep package $STATUSFILE > /dev/null 2> /dev/null
 if [ $? -eq 0 ] ; then
 	if [ ! -x /opt/lora/mp_pkt_fwd -a ! -x /opt/lora/poly_pkt_fwd ] ; then
@@ -677,7 +682,7 @@ if [ $skip -eq 0 ] ; then
 		echo "Are these values correct?"
 		doselect Yes No
 		if [ "$select_result" == "Yes" ] ; then
-			wget --header="Key: $gwkey" https://account.thethingsnetwork.org/gateways/$gwname -O /tmp/gwinfo -o /tmp/getres --no-check-certificate
+			wget --header="Key: $gwkey" https://$ACCOUNT_SERVER_DOMAIN/gateways/$gwname -O /tmp/gwinfo -o /tmp/getres --no-check-certificate
 			grep "frequency_plan" /tmp/gwinfo > /dev/null 2> /dev/null
 			if [ $? -eq 0 ] ; then
 			frequrl=$(grep -oE '"frequency_plan_url":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
@@ -691,8 +696,11 @@ if [ $skip -eq 0 ] ; then
 			if [ X"$router" == X"ttn.opennetworkinfrastructure.org" ] ; then
 				router="$router:1882"
 			fi
+      if [ X"$ROUTER_MQTT_ADDRESS" == X"" ] ; then
+        ROUTER_MQTT_ADDRESS="$router"
+      fi
 			# check for valid router information
-			if [ X"$router" == X"" ] ; then
+      if [ X"$ROUTER_MQTT_ADDRESS" == X"" ] ; then
 				echo ""
 				echo ""
 				echo ""
@@ -752,7 +760,7 @@ if [ $skip -eq 0 ] ; then
 	"servers": [
 		{
 			"serv_type": "ttn",
-			"server_address": "$router",
+			"server_address": "$ROUTER_MQTT_ADDRESS",
 			"serv_gw_id": "$gwname",
 			"serv_gw_key": "$gwkey",
 			"serv_enabled": true
