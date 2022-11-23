@@ -649,8 +649,19 @@ if [ $? -eq 0 ] ; then
 	if [ "$select_result" == "No" ] ; then
 		skip=1
 	else
-		gwname=$(grep -oE '"serv_gw_id": "[^\\"]*"' /var/config/lora/local_conf.json | sed -e 's/.*": "//' -e 's/"//g')
-		gwkey=$(grep -oE '"serv_gw_key": "[^\\"]*"' /var/config/lora/local_conf.json | sed -e 's/.*": "//' -e 's/"//g')
+		gwname=$(grep -oE '"serv_gw_id": "[^\\"]*"' /var/config/lora/local_conf.json | sed -e 's/.*": "//' -e 's/"//g' | head -1)
+		gwkey=$(grep -oE '"serv_gw_key": "[^\\"]*"' /var/config/lora/local_conf.json | sed -e 's/.*": "//' -e 's/"//g' | head -1)
+		while :; do
+			echo "Please provide the (short) name of the cluster to use"
+			echo -n "TTN Cluster (eu1/nam1/au1): "
+			read cluster
+			echo "Cluster: $cluster.cloud.thethings.network"
+			echo "Is this correct?"
+			doselect Yes No
+			if [ "$select_result" == "Yes" ] ; then
+				break
+			fi
+		done
 	fi
 fi
 
