@@ -641,6 +641,7 @@ fi
 skip=0
 gwname=""
 gwkey=""
+cluster=""
 grep '"serv_type": "ttn"' /var/config/lora/local_conf.json > /dev/null 2> /dev/null
 if [ $? -eq 0 ] ; then
 	echo "Gateway seems to be configured for TTN already, update configuration?"
@@ -656,12 +657,9 @@ fi
 if [ $skip -eq 0 ] ; then
 	# Get data from TTN console
 	echo "Provide the gateway registration data from the TTN console"
-	echo "gateway should be registered *NOT* using 'legacy packet forwarder'"
-
-	frequrl="";
-	freqplan="";
-	router="";
-	descr="";
+	echo "The required key is for an API key with"
+        echo " 'link as Gateway to a Gateway Server for traffic exchange, i.e. write uplink and read downlink' "
+        echo "rights granted"
 
 	while :; do
 		if [ X"$gwkey" == X"" ] ; then
@@ -670,37 +668,27 @@ if [ $skip -eq 0 ] ; then
 			read gwname
 			echo -n "Gateway Key: "
 			read gwkey
+			echo -n "TTN Cluster (eu1/nam1/au1): "
+			read cluster
 		fi
 		echo
 		echo "Gateway ID: $gwname"
 		echo "Gateway Key: $gwkey"
+		echo "Cluster: $cluster.cloud.thethings.network"
 		echo "Are these values correct?"
 		doselect Yes No
 		if [ "$select_result" == "Yes" ] ; then
-			wget --header="Key: $gwkey" https://account.thethingsnetwork.org/gateways/$gwname -O /tmp/gwinfo -o /tmp/getres --no-check-certificate
-			grep "frequency_plan" /tmp/gwinfo > /dev/null 2> /dev/null
+			wget --header="Authorization: Bearer $gwkey" https://${cluster}.cloud.thethings.network/api/v3/gcs/gateways/$gwname/semtechudp/global_conf.json -O /tmp/gwinfo -o /tmp/getres --no-check-certificate
+			grep "server_address" /tmp/gwinfo > /dev/null 2> /dev/null
 			if [ $? -eq 0 ] ; then
-			frequrl=$(grep -oE '"frequency_plan_url":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
-			freqplan=$(grep -oE '"frequency_plan":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
-			router=$(grep -oE '"router":\{"[^\}]*},' /tmp/gwinfo | grep -oE '"mqtt_address":"[^\\"]*"' | sed -e 's#mqt.*://##' -e 's/.*":"//' -e 's/"//g' -e 's/:.*//')
-			descr=$(grep -oE '"description":"[^\\"]*",' /tmp/gwinfo | sed -e 's/.*":"//' -e 's/",//')
+			router=$(grep -oE '"server_address":[ ]*"[^,]*,' /tmp/gwinfo | tail -1 | sed -e 's/.*":[ ]*"//' -e 's/"//g' -e 's/,//')
 
-			if [ X"$router" == X"thethings.meshed.com.au" ] ; then
-				router="$router:1882"
-			fi
-			if [ X"$router" == X"ttn.opennetworkinfrastructure.org" ] ; then
-				router="$router:1882"
-			fi
 			# check for valid router information
 			if [ X"$router" == X"" ] ; then
 				echo ""
-				echo ""
-				echo ""
-				echo ""
 				echo "ERROR:"
-				echo "Router value not set in TTN console. "
-				echo "Please go to gateway 'Settings' and select"
-				echo "the correct router for your region and retry."
+				echo "Can not get gateway configuration from TTN Console"
+				echo "Please check the gateway id and key"
 				echo ""
 				continue
 			fi
@@ -723,14 +711,10 @@ if [ $skip -eq 0 ] ; then
 		echo -n "E-mail address of gateway operator: "
 		read email
 		echo ""
-		echo "Description (from TTN): $descr"
-		echo "Frequency plan (from TTN): $freqplan"
-		echo ""
 		echo "Is the information correct?"
 		doselect Yes No
 		got_it=$select_result
 	done
-	echo -n "$frequrl" > /var/config/lora/global_conf_src
 	gwid=$(mts-io-sysfs show lora/eui 2> /dev/null | sed 's/://g')
 	if [ X"$gwid" == X"" ] ; then
 		echo "FATAL ERROR: could not obtain gateway id, Lora card not found"
@@ -752,7 +736,7 @@ if [ $skip -eq 0 ] ; then
 	"servers": [
 		{
 			"serv_type": "ttn",
-			"server_address": "$router",
+			"server_address": "$router:1881",
 			"serv_gw_id": "$gwname",
 			"serv_gw_key": "$gwkey",
 			"serv_enabled": true
@@ -812,15 +796,7 @@ fi
 
 # Get global config
 echo "Get up-to-date TTN configuration for packet forwarder"
-read url < /var/config/lora/global_conf_src
-wget $url -O /var/config/lora/ttn_global_conf.json -o /dev/null --no-check-certificate
-if [ ! -f /var/config/lora/ttn_global_conf.json ] ; then
-	echo "FATAL: download of TTN configuration failed"
-	exit 1
-else
-	# Prepare configuration file
-	node /opt/lora/merge.js /var/config/lora/ttn_global_conf.json /var/config/lora/multitech_overrides.json /var/config/lora/global_conf.json
-fi
+cp /tmp/gwinfo /var/config/lora/global_conf.json
 
 # Everything is in place, start forwarder
 /etc/init.d/ttn-pkt-forwarder start
